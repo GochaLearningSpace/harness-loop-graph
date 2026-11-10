@@ -65,9 +65,12 @@ docker run -it --rm -p 5678:5678 n8nio/n8n
 
 **B. Node.js がある場合**
 ```bash
-node --version   # v24 以上であることを確認（n8n 2.x は Node.js 24 以上が必要）
+node --version   # v24.x であることを確認
 npx n8n
 ```
+> **Node.js は 24 系を使ってください。** n8n 2.x は Node.js 24 以上が必要ですが、Windows の Node.js 26 では
+> 依存パッケージ（`@confluentinc/kafka-javascript`）のビルド済みバイナリがなく、インストールに失敗しました（2026年11月時点で確認）。
+> winget の場合: `winget install --id OpenJS.NodeJS.LTS --version 24.22.1`
 > 初回は約2,300パッケージをダウンロードするため、**20分前後かかることがあります**。研修で使う場合は事前に済ませておいてください。
 > また n8n 2.x では、コンテナ外での実行は「非推奨」と表示されます（デモには支障ありません）。
 

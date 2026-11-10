@@ -53,7 +53,7 @@ python demos/langgraph_demo.py --open   # 実行後、通過経路を色付け�
 ### GUI 版（n8n・無料・API キー不要）
 
 ```bash
-docker run -it --rm -p 5678:5678 n8nio/n8n     # または Node.js 24 以上で: npx n8n
+docker run -it --rm -p 5678:5678 n8nio/n8n     # または Node.js 24 系で: npx n8n（26 は不可）
 ```
 
 http://localhost:5678 を開き、`gui/n8n/support_flow.json` をインポートして **Execute** を押すだけです。

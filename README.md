@@ -6,7 +6,7 @@ AI エージェント開発で重要な3つの設計観点を、**各1分程度�
 |---|---|---|---|
 | 1 | [Harness Engineering](docs/01_harness_engineering.md) | モデルの**周りの仕組み**（検証・権限・リトライ・ログ）を設計する | `demos/harness_demo.py` |
 | 2 | [Loop Engineering](docs/02_loop_engineering.md) | **試す→検証→直す** の反復と停止条件を設計する | `demos/loop_demo.py` |
-| 3 | [Graph Engineering](docs/03_graph_engineering.md) | 処理フローを**ノード・エッジ・状態**のグラフで設計する | `demos/graph_demo.py` |
+| 3 | [Graph Engineering](docs/03_graph_engineering.md) | 処理フローを**ノード・エッジ・状態**のグラフで設計する | `demos/graph_demo.py`<br>`demos/langgraph_demo.py`（LangGraph + LangChain 版・見える化） |
 
 ```
  Graph（構造）   ┌─ classify ─▶ draft ─▶ review ─┐
@@ -19,6 +19,7 @@ AI エージェント開発で重要な3つの設計観点を、**各1分程度�
 ## 動かし方
 
 必要なもの: **Python 3.9+ のみ**（外部ライブラリ・API キー不要）
+※ LangGraph 版のみ Python 3.10+ と `requirements-langgraph.txt` のインストールが必要です
 
 ```bash
 # 個別に実行（発表用のテンポで表示）
@@ -32,6 +33,21 @@ python demos/run_all.py
 # 待ち時間なしで一気に表示
 python demos/run_all.py --fast
 ```
+
+### LangGraph + LangChain 版（グラフの見える化）
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate            # macOS/Linux: source .venv/bin/activate
+pip install -r requirements-langgraph.txt
+
+python demos/langgraph_demo.py --open   # 実行後、通過経路を色付けした図をブラウザで開く
+```
+
+ターミナルに ASCII のグラフ図とノードごとの実行トレースを表示し、`output/langgraph_flow.html` に Mermaid 図を出力します。
+図では、入力ごとに実際に通ったノードが黄色で表示されます。こちらも API キーは不要です。
+
+![LangGraph 実行の見える化](docs/images/langgraph_flow.png)
 
 > デモの「モデル」は、再現性のため台本どおりに応答する Fake モデルです。
 > 毎回同じ結果になるので、説明会・研修でも安心して使えます。
@@ -58,13 +74,16 @@ python demos/run_all.py --fast
 ├── docs/
 │   ├── 01_harness_engineering.md
 │   ├── 02_loop_engineering.md
-│   └── 03_graph_engineering.md
-└── demos/
-    ├── _common.py         # 色付き出力・テンポ調整
-    ├── harness_demo.py
-    ├── loop_demo.py
-    ├── graph_demo.py
-    └── run_all.py
+│   ├── 03_graph_engineering.md
+│   └── images/langgraph_flow.png
+├── demos/
+│   ├── _common.py         # 色付き出力・テンポ調整
+│   ├── harness_demo.py
+│   ├── loop_demo.py
+│   ├── graph_demo.py      # 自作ミニエンジン版（標準ライブラリのみ）
+│   ├── langgraph_demo.py  # LangGraph + LangChain 版（見える化）
+│   └── run_all.py
+└── requirements-langgraph.txt
 ```
 
 ## ハンズオン課題（任意）

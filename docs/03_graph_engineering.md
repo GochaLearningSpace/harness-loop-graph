@@ -67,6 +67,55 @@ python demos/graph_demo.py
 - `max_steps` … グラフにサイクルがあるので無限ループ防止（= Loop Engineering の停止条件）
 - `revisions >= 3` で強制 approve … 差し戻し回数の上限
 
+## LangGraph + LangChain 版（見える化）
+
+同じフローを本物のフレームワークで実装した版です。
+
+```bash
+pip install -r requirements-langgraph.txt
+python demos/langgraph_demo.py --open
+```
+
+| 見える化 | 方法 |
+|---|---|
+| ターミナルの ASCII 図 | `app.get_graph().draw_ascii()`（grandalf を使用） |
+| ノードごとの実行トレース | `app.stream(..., stream_mode="updates")` で各ノードが返した状態の差分を表示 |
+| ブラウザでの図 | `draw_mermaid()` の定義に、**実際に通ったノードの黄色ハイライト**を追記して `output/langgraph_flow.html` に出力 |
+| PNG（任意） | `--png` を付けると `draw_mermaid_png()` で出力（外部 API mermaid.ink にグラフ定義を送信） |
+
+![LangGraph 実行の見える化](images/langgraph_flow.png)
+
+### 自作エンジン版との対応
+
+| 自作 (`graph_demo.py`) | LangGraph (`langgraph_demo.py`) |
+|---|---|
+| `Graph()` | `StateGraph(SupportState)`（`TypedDict` で状態の型を定義） |
+| `@g.node("draft")` | `g.add_node("draft", draft)` |
+| `g.edge(a, b)` | `g.add_edge(a, b)` |
+| `g.conditional(src, router, mapping)` | `g.add_conditional_edges(src, router, mapping)` |
+| `g.run(state, start=...)` | `g.compile()` → `app.invoke()` / `app.stream()` |
+| `max_steps` | `recursion_limit`（既定 25） |
+| 自作 `mermaid()` | `app.get_graph().draw_mermaid()` / `draw_ascii()` / `draw_mermaid_png()` |
+
+### LangChain が担う部分
+各ノードの中の LLM 呼び出しは LangChain の **LCEL チェーン** `prompt | model | parser` で書いています。
+
+```python
+classify_chain = ChatPromptTemplate.from_messages([...]) | FakeListChatModel(responses=[...]) | StrOutputParser()
+```
+
+`FakeListChatModel` は台本どおりに答える LangChain 標準のテスト用モデルです。
+`langchain-anthropic` の `ChatAnthropic(model="claude-sonnet-5-5")` などに差し替えれば、グラフはそのままで実モデルを使うようになります。
+
+- **LangChain** = 1つのノードの中身（プロンプト・モデル・パーサーの部品化）
+- **LangGraph** = ノード同士のつなぎ方（状態・分岐・サイクル・可視化）
+
+### 話すポイント（台本）
+1. ASCII 図 → 「`get_graph()` だけで構造が図になる」
+2. stream のトレース → 「各ノードが状態のどこを更新したかが1行ずつ見える」
+3. ブラウザ（`--open`）→ 同じグラフでも、入力ごとに通る経路（黄色）が違うことを見せる
+4. 締め: **自作版と同じ考え方。フレームワークを使うと図・トレース・再開などが最初から付いてくる**
+
 ## 発展
 - 並列ノード（fan-out / fan-in）で調査タスクを同時実行
 - `review` を人間の承認ノードにする（Human-in-the-loop）

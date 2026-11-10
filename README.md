@@ -27,6 +27,8 @@ cd harness-loop-graph
 claude
 ```
 
+初回起動時に「このフォルダを信頼しますか」と聞かれたら **Yes** を選んでください（信頼しないと `.claude/settings.json` の許可設定が効きません）。
+
 依頼の例:
 - 「ハーネスのデモを見せて」
 - 「ループと LangGraph の違いが分かるデモを動かして」（LangGraph のインストールも自動で行います）
@@ -35,7 +37,8 @@ claude
 
 設定ファイル:
 - `CLAUDE.md` … デモ一覧、実行方法、説明の仕方
-- `.claude/settings.json` … デモ実行とセットアップのコマンドを確認なしで実行できるよう許可
+- `.claude/settings.json` … 各デモの実行コマンド（決め打ちの完全一致のみ）を確認なしで実行できるよう許可。
+  `pip install` などのセットアップは安全のため毎回確認が出ます
 - `.claude/skills/demo/SKILL.md` … `/demo` コマンド
 
 ## 動かし方（手動）

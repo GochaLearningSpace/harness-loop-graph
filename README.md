@@ -5,7 +5,7 @@ AI エージェント開発で重要な3つの設計観点を、**各1分程度�
 | # | テーマ | ひとことで | デモ |
 |---|---|---|---|
 | 1 | [Harness Engineering](docs/01_harness_engineering.md) | モデルの**周りの仕組み**（検証・権限・リトライ・ログ）を設計する | `demos/harness_demo.py` |
-| 2 | [Loop Engineering](docs/02_loop_engineering.md) | **試す→検証→直す** の反復と停止条件を設計する | `demos/loop_demo.py` |
+| 2 | [Loop Engineering](docs/02_loop_engineering.md) | **試す→検証→直す** の反復と停止条件を設計する | `demos/loop_demo.py`<br>`demos/loop_vs_langgraph_demo.py`（同じループを LangGraph で書いた比較版） |
 | 3 | [Graph Engineering](docs/03_graph_engineering.md) | 処理フローを**ノード・エッジ・状態**のグラフで設計する | `demos/graph_demo.py`<br>`demos/langgraph_demo.py`（LangGraph + LangChain 版・見える化） |
 | 4 | [Graph Engineering と GUI ツール](docs/04_graph_tools.md) | Dify / Copilot Studio / n8n などは**グラフを GUI で描く道具** | `gui/n8n/support_flow.json`（無料の n8n で動かす GUI 版） |
 
@@ -95,6 +95,7 @@ http://localhost:5678 を開き、`gui/n8n/support_flow.json` をインポート
 │   ├── loop_demo.py
 │   ├── graph_demo.py      # 自作ミニエンジン版（標準ライブラリのみ）
 │   ├── langgraph_demo.py  # LangGraph + LangChain 版（見える化）
+│   ├── loop_vs_langgraph_demo.py  # while ループと LangGraph の比較
 │   └── run_all.py
 ├── gui/
 │   └── n8n/support_flow.json  # n8n にインポートする GUI 版ワークフロー

@@ -17,7 +17,28 @@ AI エージェント開発で重要な3つの設計観点を、**各1分程度�
  Harness（器）   └ 各ノードのモデル呼び出しを 検証・権限・リトライ で包む
 ```
 
-## 動かし方
+## Claude Code で動かす（おすすめ）
+
+clone したフォルダで Claude Code を起動し、自然言語で頼むだけでデモを実行・解説します。
+
+```bash
+git clone https://github.com/GochaLearningSpace/harness-loop-graph.git
+cd harness-loop-graph
+claude
+```
+
+依頼の例:
+- 「ハーネスのデモを見せて」
+- 「ループと LangGraph の違いが分かるデモを動かして」（LangGraph のインストールも自動で行います）
+- 「全部順番に見せて」
+- `/demo harness`、`/demo langgraph` などのスラッシュコマンドも使えます
+
+設定ファイル:
+- `CLAUDE.md` … デモ一覧、実行方法、説明の仕方
+- `.claude/settings.json` … デモ実行とセットアップのコマンドを確認なしで実行できるよう許可
+- `.claude/skills/demo/SKILL.md` … `/demo` コマンド
+
+## 動かし方（手動）
 
 必要なもの: **Python 3.9+ のみ**（外部ライブラリ・API キー不要）
 ※ LangGraph 版のみ Python 3.10+ と `requirements-langgraph.txt` のインストールが必要です

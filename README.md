@@ -1,5 +1,7 @@
 # Harness / Loop / Graph Engineering 入門
 
+**日本語** | [English](README.en.md)
+
 AI エージェント開発で重要な3つの設計観点を、**各1分程度のデモ**で体験する教材です。
 
 | # | テーマ | ひとことで | デモ |
@@ -107,6 +109,9 @@ http://localhost:5678 を開き、`gui/n8n/support_flow.json` をインポート
 ```
 .
 ├── README.md
+├── README.en.md            # 英語版 README
+├── CLAUDE.md               # Claude Code 用の指示
+├── .claude/                # Claude Code の設定と /demo スキル
 ├── docs/
 │   ├── 01_harness_engineering.md
 │   ├── 02_loop_engineering.md

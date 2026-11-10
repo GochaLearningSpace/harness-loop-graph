@@ -117,6 +117,7 @@ classify_chain = ChatPromptTemplate.from_messages([...]) | FakeListChatModel(res
 4. 締め: **自作版と同じ考え方。フレームワークを使うと図・トレース・再開などが最初から付いてくる**
 
 ## 発展
+- Dify / Copilot Studio / n8n などの GUI ツールとの関係と、GUI 版デモは [04_graph_tools.md](04_graph_tools.md) を参照
 - 並列ノード（fan-out / fan-in）で調査タスクを同時実行
 - `review` を人間の承認ノードにする（Human-in-the-loop）
 - 状態をチェックポイント保存して、途中から再開できるようにする

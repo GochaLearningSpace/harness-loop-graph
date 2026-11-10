@@ -7,6 +7,7 @@ AI エージェント開発で重要な3つの設計観点を、**各1分程度�
 | 1 | [Harness Engineering](docs/01_harness_engineering.md) | モデルの**周りの仕組み**（検証・権限・リトライ・ログ）を設計する | `demos/harness_demo.py` |
 | 2 | [Loop Engineering](docs/02_loop_engineering.md) | **試す→検証→直す** の反復と停止条件を設計する | `demos/loop_demo.py` |
 | 3 | [Graph Engineering](docs/03_graph_engineering.md) | 処理フローを**ノード・エッジ・状態**のグラフで設計する | `demos/graph_demo.py`<br>`demos/langgraph_demo.py`（LangGraph + LangChain 版・見える化） |
+| 4 | [Graph Engineering と GUI ツール](docs/04_graph_tools.md) | Dify / Copilot Studio / n8n などは**グラフを GUI で描く道具** | `gui/n8n/support_flow.json`（無料の n8n で動かす GUI 版） |
 
 ```
  Graph（構造）   ┌─ classify ─▶ draft ─▶ review ─┐
@@ -49,6 +50,17 @@ python demos/langgraph_demo.py --open   # 実行後、通過経路を色付け�
 
 ![LangGraph 実行の見える化](docs/images/langgraph_flow.png)
 
+### GUI 版（n8n・無料・API キー不要）
+
+```bash
+docker run -it --rm -p 5678:5678 n8nio/n8n     # または Node.js 24 以上で: npx n8n
+```
+
+http://localhost:5678 を開き、`gui/n8n/support_flow.json` をインポートして **Execute** を押すだけです。
+
+![n8n で動かした問い合わせ対応フロー](docs/images/n8n_flow.png)
+手順と台本は [docs/04_graph_tools.md](docs/04_graph_tools.md) を参照してください。
+
 > デモの「モデル」は、再現性のため台本どおりに応答する Fake モデルです。
 > 毎回同じ結果になるので、説明会・研修でも安心して使えます。
 > 本物の LLM（Claude API など）に差し替えても、ハーネス・ループ・グラフの構造はそのまま使えます。
@@ -75,7 +87,8 @@ python demos/langgraph_demo.py --open   # 実行後、通過経路を色付け�
 │   ├── 01_harness_engineering.md
 │   ├── 02_loop_engineering.md
 │   ├── 03_graph_engineering.md
-│   └── images/langgraph_flow.png
+│   ├── 04_graph_tools.md       # Dify / Copilot Studio / n8n との関係
+│   └── images/
 ├── demos/
 │   ├── _common.py         # 色付き出力・テンポ調整
 │   ├── harness_demo.py
@@ -83,6 +96,8 @@ python demos/langgraph_demo.py --open   # 実行後、通過経路を色付け�
 │   ├── graph_demo.py      # 自作ミニエンジン版（標準ライブラリのみ）
 │   ├── langgraph_demo.py  # LangGraph + LangChain 版（見える化）
 │   └── run_all.py
+├── gui/
+│   └── n8n/support_flow.json  # n8n にインポートする GUI 版ワークフロー
 └── requirements-langgraph.txt
 ```
 

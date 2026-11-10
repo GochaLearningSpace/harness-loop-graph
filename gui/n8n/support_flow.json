@@ -1,0 +1,191 @@
+{
+  "name": "Graph Engineering Demo - 問い合わせ対応フロー",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "6b1f0f8e-0001-4c3a-9a10-000000000001",
+      "name": "▶ 実行ボタン",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// サンプル問い合わせ（2件）。ここを書き換えて試せます\nreturn [\n  { json: { query: '営業時間を教えて' } },\n  { json: { query: '先週買った商品を返金したい' } },\n];"
+      },
+      "id": "6b1f0f8e-0002-4c3a-9a10-000000000002",
+      "name": "サンプル問い合わせ",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+                "conditions": [
+                  {
+                    "id": "c-refund",
+                    "leftValue": "={{ $json.query }}",
+                    "rightValue": "返金",
+                    "operator": { "type": "string", "operation": "contains" }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "refund"
+            },
+            {
+              "conditions": {
+                "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+                "conditions": [
+                  {
+                    "id": "c-faq",
+                    "leftValue": "={{ $json.query }}",
+                    "rightValue": "返金",
+                    "operator": { "type": "string", "operation": "notContains" }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "faq"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6b1f0f8e-0003-4c3a-9a10-000000000003",
+      "name": "classify（分類）",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "a-faq", "name": "answer", "value": "営業時間は 9:00-18:00 です。", "type": "string" },
+            { "id": "a-route", "name": "route", "value": "faq", "type": "string" }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "6b1f0f8e-0004-4c3a-9a10-000000000004",
+      "name": "faq_answer",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [700, 460]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "a-oid", "name": "order_id", "value": 1234, "type": "number" },
+            { "id": "a-days", "name": "days", "value": 5, "type": "number" },
+            { "id": "a-rev", "name": "revisions", "value": 0, "type": "number" },
+            { "id": "a-route2", "name": "route", "value": "refund", "type": "string" }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "6b1f0f8e-0005-4c3a-9a10-000000000005",
+      "name": "lookup_order（注文DB参照）",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [700, 160]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 下書き作成（本番ではここを LLM ノードに置き換える）\n// 1回目はわざと根拠のない回答 → review で差し戻される\nreturn $input.all().map(item => {\n  const s = item.json;\n  const revisions = (s.revisions || 0) + 1;\n  const answer = revisions === 1\n    ? '返金できます。'\n    : `注文#${s.order_id}は購入${s.days}日以内のため返金可能です。`;\n  return { json: { ...s, revisions, answer } };\n});"
+      },
+      "id": "6b1f0f8e-0006-4c3a-9a10-000000000006",
+      "name": "draft（下書き）",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [940, 160]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "loose" },
+          "conditions": [
+            {
+              "id": "c-has-order",
+              "leftValue": "={{ $json.answer }}",
+              "rightValue": "注文#",
+              "operator": { "type": "string", "operation": "contains" }
+            },
+            {
+              "id": "c-max-rev",
+              "leftValue": "={{ $json.revisions }}",
+              "rightValue": 3,
+              "operator": { "type": "number", "operation": "gte" }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "6b1f0f8e-0007-4c3a-9a10-000000000007",
+      "name": "review（根拠あり？）",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1180, 160]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "a-sent", "name": "sent", "value": true, "type": "boolean" }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "6b1f0f8e-0008-4c3a-9a10-000000000008",
+      "name": "send（送信）",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1440, 300]
+    }
+  ],
+  "connections": {
+    "▶ 実行ボタン": {
+      "main": [[{ "node": "サンプル問い合わせ", "type": "main", "index": 0 }]]
+    },
+    "サンプル問い合わせ": {
+      "main": [[{ "node": "classify（分類）", "type": "main", "index": 0 }]]
+    },
+    "classify（分類）": {
+      "main": [
+        [{ "node": "lookup_order（注文DB参照）", "type": "main", "index": 0 }],
+        [{ "node": "faq_answer", "type": "main", "index": 0 }]
+      ]
+    },
+    "faq_answer": {
+      "main": [[{ "node": "send（送信）", "type": "main", "index": 0 }]]
+    },
+    "lookup_order（注文DB参照）": {
+      "main": [[{ "node": "draft（下書き）", "type": "main", "index": 0 }]]
+    },
+    "draft（下書き）": {
+      "main": [[{ "node": "review（根拠あり？）", "type": "main", "index": 0 }]]
+    },
+    "review（根拠あり？）": {
+      "main": [
+        [{ "node": "send（送信）", "type": "main", "index": 0 }],
+        [{ "node": "draft（下書き）", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": { "executionOrder": "v1" },
+  "active": false
+}
